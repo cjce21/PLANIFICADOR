@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- FIX UX: Evita zoom automático en inputs en iOS -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Planificador Docente</title>
     
@@ -17,21 +16,16 @@
     <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Chewy&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- LIBRERÍAS PARA WORD (Frontend) -->
+    <!-- LIBRERÍAS -->
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.49.1/docxtemplater.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
-    <!-- FIX FUNCIONAL: JSON5 para parsing robusto -->
     <script src="https://unpkg.com/json5@2/dist/index.min.js"></script>
-
-    <!-- LIBRERÍAS PARA LECTURA DE DOCUMENTOS (NUEVO) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
-        // Configuración Worker PDF.js
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         tailwind.config = {
@@ -44,12 +38,12 @@
                     },
                     colors: {
                         montessori: {
-                            blue: '#1B4965',     // Primario (Dark Teal)
-                            teal: '#3A9D9D',     // Secundario (Medium Teal)
-                            red: '#e74c3c',      // Peligro (Red)
-                            yellow: '#FFC857',   // Acento Amarillo
+                            blue: '#1B4965',
+                            teal: '#3A9D9D',
+                            red: '#e74c3c',
+                            yellow: '#FFC857',
                             gray: '#F3F4F6',
-                            lightBlue: '#E0EFFF' // Fondo Claro
+                            lightBlue: '#E0EFFF'
                         }
                     },
                     boxShadow: {
@@ -67,8 +61,8 @@
                             '100%': { 'background-position': '100% 100%' },
                         },
                         tealYellowCycle: {
-                            '0%, 100%': { color: '#1B4965' }, // Dark Teal
-                            '50%': { color: '#FFC857' }       // Yellow
+                            '0%, 100%': { color: '#1B4965' },
+                            '50%': { color: '#FFC857' }
                         },
                         successFeedback: {
                             '0%': { transform: 'scale(1)', opacity: 1 },
@@ -826,7 +820,7 @@
 
             try {
                 // UPDATE: Usamos POST explícito para evitar caché y problemas de redirect
-                const response = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`, {
+                const response = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user.trim())}&password=${encodeURIComponent(pass.trim())}`, {
                     method: 'POST',
                     redirect: 'follow',
                     headers: {
@@ -853,13 +847,13 @@
                     loginUserSuccess(data.name, data.usernameUnique, false);
 
                 } else {
-                    throw new Error("Credenciales incorrectas o error en servidor");
+                    throw new Error(data.error || "Credenciales incorrectas o error en servidor");
                 }
             } catch (error) {
                 console.error(error);
                 statusBox.className = "min-h-[40px] transition-all duration-300 rounded-lg flex items-center justify-center gap-2 border px-2 py-1 bg-red-50 border-red-200";
                 statusText.className = "text-xs font-bold text-red-600";
-                statusText.innerText = error.message.includes("Credenciales") ? "Usuario o contraseña incorrectos" : "Error de conexión";
+                statusText.innerText = error.message;
                 btnText.classList.remove('hidden-text');
                 loader.classList.add('hidden');
                 btn.disabled = false;
