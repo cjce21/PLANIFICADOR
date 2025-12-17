@@ -83,6 +83,20 @@
             display: flex;
             flex-direction: column;
             overflow: hidden; 
+            /* REGLA DE SEGURIDAD 3: Deshabilita la selección de texto en toda la app */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        /* --- EXCEPCIÓN DE SEGURIDAD PARA CAMPOS DE EDICIÓN --- */
+        /* Permite la selección y copia de texto dentro de los campos de formulario */
+        input, textarea, .editable-field {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
         }
 
         /* --- SCROLL INVISIBLE GLOBAL --- */
@@ -344,7 +358,8 @@
 
     </style>
 </head>
-<body class="text-slate-800 font-sans antialiased">
+<!-- REGLA DE SEGURIDAD 1: Deshabilita el menú contextual (clic derecho) en toda la página -->
+<body class="text-slate-800 font-sans antialiased" oncontextmenu="return false;">
 
     <!-- PRELOADER -->
     <div id="initial-loader" class="fixed inset-0 z-[300] flex items-center justify-center bg-montessori-lightBlue transition-all duration-700">
@@ -727,6 +742,39 @@
     <div id="toast"></div>
 
     <script>
+        // REGLA DE SEGURIDAD 2: Deshabilita atajos de teclado de desarrollador (F12, Ctrl+U, etc.)
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.key === 'F12') { e.preventDefault(); }
+            
+            // Ctrl/Cmd + Shift + I/J/C (Dev Tools)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && 
+                (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+                e.preventDefault();
+            }
+            
+            // Ctrl/Cmd + U (Ver código fuente)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'U') {
+                e.preventDefault();
+            }
+
+            // Ctrl/Cmd + S (Guardar página)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'S') {
+                e.preventDefault();
+            }
+        });
+
+        // REGLA DE SEGURIDAD 4: Deshabilita CTRL+A (seleccionar todo) solo en el cuerpo principal
+        // Se permite en inputs/textareas por la excepción CSS
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'A') {
+                const activeElement = document.activeElement;
+                if (!activeElement || !(activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.classList.contains('editable-field'))) {
+                    e.preventDefault();
+                }
+            }
+        });
+
         // CONFIGURACIÓN ARQUITECTURA HÍBRIDA (NUEVA LOGICA UNIFICADA)
         // IMPORTANTE: Asegúrate de que esta URL apunta al script que contiene la lógica de API.txt
         const API_URL = "https://script.google.com/macros/s/AKfycbwb0EpW1cPVSfOXj3XE0GR5t443XLelKb4gPNtW69IYN_EoehMli0rtMbSaodqEOeo0/exec";
